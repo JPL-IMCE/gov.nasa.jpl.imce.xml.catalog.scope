@@ -31,8 +31,6 @@ headerLicense := Some(HeaderLicense.Custom(
      |""".stripMargin
 ))
 
-version := "0.1"
-
 scalaVersion := Versions.scala212
 
 crossScalaVersions := Seq(Versions.scala212, Versions.scala211)
