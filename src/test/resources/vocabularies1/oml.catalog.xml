@@ -21,5 +21,8 @@
 	<rewriteURI
 			rewritePrefix="file:./imce.jpl.nasa.gov/vocabularies/foundation/base/base"
 			uriStartString="http://imce.jpl.nasa.gov/foundation/base/base"/>
+	<rewriteURI
+			rewritePrefix="file:./imce.jpl.nasa.gov/vocabularies/foundation/fact/fact"
+			uriStartString="http://imce.jpl.nasa.gov/foundation/fact/fact"/>
 
 </catalog>

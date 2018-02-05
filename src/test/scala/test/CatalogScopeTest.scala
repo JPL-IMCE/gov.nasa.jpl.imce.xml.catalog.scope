@@ -76,9 +76,9 @@ class CatalogScopeTest extends FlatSpec {
           }
         })
 
-      // verify that there are exactly 5 rewrite rules and correspondingly 5 sets of files.
-      assert(5 == cat.entries().count(_.getEntryType == Catalog.REWRITE_URI))
-      assert(5 == scope.size)
+      // verify that there are exactly 6 rewrite rules and correspondingly 6 sets of files.
+      assert(cat.entries().count(_.getEntryType == Catalog.REWRITE_URI) == 6)
+      assert(scope.size == 6)
 
       // verify that the scope for each rewrite uri rule is exactly 1 file
       scope.values.foreach { files =>
@@ -95,7 +95,8 @@ class CatalogScopeTest extends FlatSpec {
         "http://purl.org/dc/elements/1.1/",
         "http://imce.jpl.nasa.gov/foundation/annotation/annotation",
         "http://imce.jpl.nasa.gov/foundation/base/base",
-        "http://imce.jpl.nasa.gov/foundation/base/base-embedding"
+        "http://imce.jpl.nasa.gov/foundation/base/base-embedding",
+        "http://imce.jpl.nasa.gov/foundation/fact/fact"
       ).foreach { uri =>
         val resolved = cat.resolveURIWithExtension(uri, ".oml")
         assert(resolved.isDefined)

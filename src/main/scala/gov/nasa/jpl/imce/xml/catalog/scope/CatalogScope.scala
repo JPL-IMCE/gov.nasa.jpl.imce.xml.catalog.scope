@@ -146,7 +146,13 @@ class CatalogScope() extends Catalog {
     implicit val catalogRewritePriority: Ordering[Path]
     = new Ordering[Path] {
 
-      override def compare(x: Path, y: Path): Int = x.toString.length.compare(y.toString.length)
+      override def compare(x: Path, y: Path): Int =
+        x.toString.length.compare(y.toString.length) match {
+          case 0 =>
+            x.toString.compare(y.toString)
+          case c =>
+            c
+        }
 
     }
 
