@@ -17,6 +17,6 @@ git config --global push.default simple
 git config --global user.email "nobody@nobody.org"
 git config --global user.name "Travis CI"
 
-sbt -jvm-opts travis/jvmopts.compile -Dproject.version=$TRAVIS_TAG "+ publishSigned universal:publish" ghpagesPushSite
+sbt -jvm-opts travis/jvmopts.compile -Dproject.version=$TRAVIS_TAG "+ publishSigned" "+ universal:publish" ghpagesPushSite
 
 

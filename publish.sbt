@@ -28,6 +28,4 @@ pgpSecretRing := file("local.secring.gpg")
 
 pgpPublicRing := file("local.pubring.gpg")
 
-git.baseVersion := version.value
-
 versionWithGit
