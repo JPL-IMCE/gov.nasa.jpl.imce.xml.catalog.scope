@@ -1,0 +1,34 @@
+<?xml version='1.0'?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+         
+	<rewriteURI 
+		rewritePrefix="file:./purl.org/"
+		uriStartString="http://purl.org/"/>
+
+	<rewriteURI 
+		rewritePrefix="file:./www.w3.org/"
+		uriStartString="http://www.w3.org/"/>
+
+	<!-- embeddings/magicdraw.sysml -->
+	<rewriteURI
+			rewritePrefix="file:./imce.jpl.nasa.gov/embeddings/magicdraw.sysml/foundation/base/base-embedding"
+			uriStartString="http://imce.jpl.nasa.gov/foundation/base/base-embedding"/>
+
+	<!-- vocabularies -->
+	<rewriteURI
+			rewritePrefix="file:./imce.jpl.nasa.gov/vocabularies/foundation/annotation/annotation"
+			uriStartString="http://imce.jpl.nasa.gov/foundation/annotation/annotation"/>
+	<rewriteURI
+			rewritePrefix="file:./imce.jpl.nasa.gov/vocabularies/foundation/base/base"
+			uriStartString="http://imce.jpl.nasa.gov/foundation/base/base"/>
+	<rewriteURI
+			rewritePrefix="file:./imce.jpl.nasa.gov/vocabularies/foundation/base/base"
+			uriStartString="http://imce.jpl.nasa.gov/foundation/base/base"/>
+	<rewriteURI
+			rewritePrefix="file:./imce.jpl.nasa.gov/vocabularies/does/not/exist"
+			uriStartString="http://imce.jpl.nasa.gov/foundation/does/not/exist"/>
+
+	<rewriteURI
+			rewritePrefix="strange:./weird"
+			uriStartString="http://strange"/>
+</catalog>

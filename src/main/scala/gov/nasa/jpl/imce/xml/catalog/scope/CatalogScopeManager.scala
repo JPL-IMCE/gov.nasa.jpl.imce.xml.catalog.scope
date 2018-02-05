@@ -18,25 +18,36 @@
 
 package gov.nasa.jpl.imce.xml.catalog.scope
 
-import org.apache.xml.resolver.CatalogManager
-
+import org.apache.xml.resolver.{Catalog, CatalogManager}
+import org.scalactic.Requirements.{require, requirementsHelper}
 /**
-  * CatalogScopeManager is a CatalogManager configured to use a CatalogScope as its static catalog.
-  *
-  * This means that calls to 'getCatalog' will always return this static CatalogScope.
+  * CatalogScopeManager is a CatalogManager configured to create a CatalogScope.
   *
   * @see https://xerces.apache.org/xml-commons/components/apidocs/resolver/org/apache/xml/resolver/CatalogManager.html
+  * @group scope
   */
 class CatalogScopeManager extends CatalogManager {
 
-  setUseStaticCatalog(true)
+  setUseStaticCatalog(false)
   setCatalogClassName("gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope")
 
-  val privateCatalog: CatalogScope = new CatalogScope
-  privateCatalog.setCatalogManager(this)
-  privateCatalog.setupReaders()
-  privateCatalog.loadSystemCatalogs()
+  /**
+    * Get a new private [[CatalogScope]]
+    * @return A new [[CatalogScope]]
+    * @group scope
+    */
+  override def getPrivateCatalog: CatalogScope = {
+    val c = new CatalogScope
+    c.setCatalogManager(this)
+    c.setupReaders()
+    c
+  }
 
-  override def getPrivateCatalog: CatalogScope = privateCatalog
+  /**
+    * Get a new [[CatalogScope]]
+    * @return A new [[CatalogScope]]
+    * @group scope
+    */
+  override def getCatalog: CatalogScope = getPrivateCatalog
 
 }

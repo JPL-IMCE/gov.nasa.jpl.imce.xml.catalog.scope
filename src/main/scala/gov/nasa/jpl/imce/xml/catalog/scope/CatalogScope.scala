@@ -21,13 +21,14 @@ package gov.nasa.jpl.imce.xml.catalog.scope
 import java.io.{File, IOException}
 import java.net.URL
 
-import ammonite.ops.{Path, ls}
+import ammonite.ops.{Path, ls, up}
 import org.apache.xml.resolver.{Catalog, CatalogEntry}
 
+import org.scalactic.Requirements.{requirementsHelper,require,requireState}
 import scala.collection.immutable.{Map, SortedMap, Seq, Set}
 import scala.collection.JavaConverters.{asInstanceOf, asScalaBufferConverter}
 import scala.{Boolean, None, Option, Some, StringContext, Unit}
-import scala.Predef.{augmentString,intWrapper,require,ArrowAssoc,String}
+import scala.Predef.{augmentString,intWrapper,ArrowAssoc,String}
 import scala.util.control.Exception.nonFatalCatch
 
 /**
@@ -38,23 +39,27 @@ import scala.util.control.Exception.nonFatalCatch
   * - localFilesScope(predicate) based on the catalog rewrite rules, finds all resolvable files that match the predicate.
   *
   * @see https://xerces.apache.org/xml-commons/components/apidocs/resolver/org/apache/xml/resolver/Catalog.html
+  * @group scope
   */
 class CatalogScope() extends Catalog {
 
   protected val parsedCatalogs = new scala.collection.mutable.HashSet[URL]()
 
+  private var isParsing: Boolean = false
   private var parsingCatalog: Option[URL] = None
 
   /**
     * Has this catalog been successfully parsed?
     *
     * @param url catalog
-    * @return whether this catalog url has been successfully parsed already.
+    * @return whether this catalog url has been successfully parsed already
+    * @group scope
     */
   def hasParsedCatalog(url: URL): Boolean = parsedCatalogs.contains(url)
 
   /**
     * Get the successfully parsed catalogs.
+    * @group scope
     */
   def getParsedCatalogs(): Set[URL] = parsedCatalogs.to[Set]
 
@@ -62,7 +67,8 @@ class CatalogScope() extends Catalog {
     * Keeps track of successfully parsed catalog files.
     *
     * @param url The URL for an absolute path to a catalog file.
-    * @throws IOException if the underlying library silently fails to parse a catalog.
+    * @throws java.io.IOException if the underlying library silently fails to parse a catalog.
+    * @group scope
     */
   override def parseCatalog(url: URL): Unit
   = synchronized[Unit] {
@@ -70,9 +76,11 @@ class CatalogScope() extends Catalog {
     val file = new File(url.toURI)
     require(file.isAbsolute)
     if (!hasParsedCatalog(url)) {
+      isParsing = true
       parsingCatalog = Some(url)
       super.parseCatalog(url)
       if (parsingCatalog.nonEmpty) {
+        isParsing = false
         parsingCatalog = None
         throw new IOException(s"parseCatalog($url) failed silently")
       }
@@ -83,23 +91,56 @@ class CatalogScope() extends Catalog {
     * Unfortunately, there are circumstances where parsing a catalog fails silently
     * without an exception thrown. One way to detect this condition is to check
     * whether parsePendingCatalogs() has been called during the execution of parseCatalog(URL).
+    * @group scope
     */
   override protected def parsePendingCatalogs(): Unit = {
-    require(parsingCatalog.nonEmpty)
+    require(isParsing)
+    requireState(parsingCatalog.nonEmpty)
     super.parsePendingCatalogs()
+    isParsing = false
     parsedCatalogs ++= parsingCatalog
     parsingCatalog = None
   }
 
   /**
+    * Resolves a URI stripped of the trailing '/', if any, with the extension appended to a file path.
+    * The resolved path may or may not be an existing file.
+    *
+    * @param uri uri should match one of the catalog rewrite uri start prefixes to resolve to a file path.
+    * @param extension file extension, starting with '.'
+    * @return A resolved file path, if the uri matches a rewrite rule
+    * @group scope
+    */
+  def resolveURIWithExtension(uri: String, extension: String): Option[Path] = {
+    val uriWithExtension = uri.stripSuffix("/")+extension
+    Option.apply(resolveURI(uriWithExtension)) match {
+      case Some(resolved) =>
+        if (resolved.startsWith("file:"))
+          Some(Path(resolved.substring(5)))
+        else
+          None
+      case _ =>
+        None
+    }
+  }
+
+  /**
     * Get the catalog entries read from the successfully parsed catalogs.
     * @return catalog entries
-    *
+    *a
     * @see https://xerces.apache.org/xml-commons/components/apidocs/resolver/org/apache/xml/resolver/CatalogEntry.html
+    * @group scope
     */
   def entries(): Seq[CatalogEntry]
   = catalogEntries.asInstanceOf[java.util.Vector[CatalogEntry]].asScala.to[Seq]
 
+  /**
+    * Files local file paths that in scope of being resolved by the [[org.apache.xml.resolver.CatalogEntry]] rules.
+    *
+    * @param predicate
+    * @return A map of the local file paths found for each [[org.apache.xml.resolver.CatalogEntry]] rule
+    * @group scope
+    */
   def localFileScope(predicate: CatalogEntryFilePredicate): Map[String, Seq[Path]]
   = {
     implicit val catalogRewritePriority: Ordering[Path]
@@ -115,12 +156,9 @@ class CatalogScope() extends Catalog {
           .apply {
             val uriStartString = entry.getEntryArg(0)
             val rewritePrefix = new File(entry.getEntryArg(1).stripPrefix("file:"))
-            if (rewritePrefix.exists() || rewritePrefix.getParentFile.exists()) {
+            if (rewritePrefix.exists || rewritePrefix.getParentFile.exists) {
               val pathPrefix = Path(rewritePrefix)
-              if (predicate.apply(uriStartString, pathPrefix))
-                Some(pathPrefix -> uriStartString)
-              else
-                None
+              Some(pathPrefix -> uriStartString)
             } else
               None
           }
@@ -139,9 +177,9 @@ class CatalogScope() extends Catalog {
 
     rewritePaths.foldLeft(Map.empty[String, Seq[Path]]) { case (acc, (pathPrefix, uriStartString)) =>
       val localFiles: Set[Path]
-      = if (pathPrefix.isDir)
+      = if (pathPrefix.toIO.exists && pathPrefix.isDir)
         ls
-          .rec((p: Path) => p.isFile && !predicate(uriStartString, p))(pathPrefix)
+          .rec((_: Path) => false)(pathPrefix)
           .filter(f => predicate(uriStartString, f))
           .to[Set]
       else

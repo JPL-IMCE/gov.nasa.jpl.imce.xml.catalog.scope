@@ -1,0 +1,8 @@
+= Enhanced Apache XML Commons Resolver API =
+
+== [[gov.nasa.jpl.imce.xml.catalog.scope.CatalogScopeManager]] ==
+
+== [[gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope]] ==
+
+== [[gov.nasa.jpl.imce.xml.catalog.scope.CatalogEntryFilePredicate]] ==
+
