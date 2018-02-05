@@ -144,7 +144,11 @@ class CatalogScope() extends Catalog {
   def localFileScope(predicate: CatalogEntryFilePredicate): Map[String, Seq[Path]]
   = {
     implicit val catalogRewritePriority: Ordering[Path]
-    = (x: Path, y: Path) => x.toString.length.compare(y.toString.length)
+    = new Ordering[Path] {
+
+      override def compare(x: Path, y: Path): Int = x.toString.length.compare(y.toString.length)
+
+    }
 
     val rewritePaths: SortedMap[Path, String] = entries().foldLeft(SortedMap.empty[Path, String]) {
       case (acc, entry: CatalogEntry) if Catalog.REWRITE_URI == entry.getEntryType =>
