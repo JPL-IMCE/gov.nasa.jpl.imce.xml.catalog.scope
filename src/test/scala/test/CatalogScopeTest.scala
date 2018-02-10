@@ -14,7 +14,7 @@ import org.scalatest._
 
 import scala.collection.immutable.{Map, Seq, Set}
 import scala.{StringContext, Unit}
-import scala.Predef.classOf
+import scala.Predef.{augmentString,classOf,ArrowAssoc}
 
 class CatalogScopeTest extends FlatSpec {
 
@@ -53,9 +53,40 @@ class CatalogScopeTest extends FlatSpec {
     assert(cat.entries().nonEmpty)
   }
 
-  "bad catalog" should "fail" in withScopedCatalog { (_, cat) =>
+  "bad catalog url" should "fail" in withScopedCatalog { (_, cat) =>
     val xml = new URL("file:/does/not/exist")
     assertThrows[IOException](cat.parseCatalog(xml))
+  }
+
+  "bad catalog file" should "fail silently" in withScopedCatalog { (_, cat) =>
+    val xml = classOf[CatalogScopeTest].getResource("/badCatalog/catalog.xml")
+    cat.parseCatalog(xml)
+    assert(cat.getParsedCatalogs().size == 1)
+    assert(cat.entries().count(_.getEntryType == Catalog.REWRITE_URI) == 1)
+
+
+    val scope: Map[(Path, String), Seq[Path]] =
+      cat.localFileScope(new CatalogEntryFilePredicate {
+        override def apply(uriStartString: String, path: Path): Boolean = {
+          assert(uriStartString.startsWith("http://"))
+          path.toIO.exists && path.isFile && path.last.endsWith(".oml")
+        }
+
+        override def expandLocalFilePath(pathPrefix: Path): Set[Path] = {
+          val expanded: Path = pathPrefix / up / (pathPrefix.last + ".oml")
+          Set(expanded)
+        }
+
+      })
+    assert(scope.size == 0)
+
+    Set[String](
+      "http://www.w3.org/2002/07/owl"
+    ).foreach { uri =>
+      val resolved = cat.resolveURIWithExtension(uri, ".oml")
+      assert(resolved.isEmpty)
+    }
+
   }
 
   "vocabularies1/oml.catalog.xml scope" should "be ok" in withScopedCatalog {
@@ -63,7 +94,7 @@ class CatalogScopeTest extends FlatSpec {
       cat.parseCatalog(
         classOf[CatalogScopeTest].getResource("/vocabularies1/oml.catalog.xml"))
 
-      val scope: Map[String, Seq[Path]] =
+      val scope: Map[(Path, String), Seq[Path]] =
         cat.localFileScope(new CatalogEntryFilePredicate {
           override def apply(uriStartString: String, path: Path): Boolean = {
             assert(uriStartString.startsWith("http://"))
@@ -88,6 +119,31 @@ class CatalogScopeTest extends FlatSpec {
           assert(f.isFile)
         }
       }
+
+      val csFiles: Seq[(String, Path)] = cat.iri2file(scope)
+
+      val iri2file: Seq[(String, Path)] = scope.foldLeft(Seq.empty[(String, Path)]) {
+        case (acc1, ((pathPrefix, uriStartPrefix), fs)) =>
+          val inc: Seq[(String, Path)] = fs.foldLeft(Seq.empty[(String, Path)]) {
+            case (acc2, f) =>
+              val suffix = f.relativeTo(pathPrefix)
+              val uri = uriStartPrefix + suffix.toString()
+
+              (uri -> f) +: acc2
+          }
+          acc1 ++ inc
+      }
+
+      iri2file.sortBy(_._1).foreach { case (iri, file) =>
+        System.out.println(s"iri = $iri\nfile=$file\n")
+      }
+      System.out.println()
+
+      csFiles.sortBy(_._1).foreach { case (iri, file) =>
+        System.out.println(s"iri = $iri\nfile=$file\n")
+      }
+
+      assert(csFiles.toMap == iri2file.toMap)
 
       val files: Set[Path] = scope.values.flatMap(_.to[Set]).to[Set]
       Set[String](
@@ -125,7 +181,7 @@ class CatalogScopeTest extends FlatSpec {
       cat.parseCatalog(
         classOf[CatalogScopeTest].getResource("/vocabularies2/oml.catalog.xml"))
 
-      val scope: Map[String, Seq[Path]] =
+      val scope: Map[(Path, String), Seq[Path]] =
         cat.localFileScope(new CatalogEntryFilePredicate {
           override def apply(uriStartString: String, path: Path): Boolean = {
             assert(uriStartString.startsWith("http://"))
