@@ -838,6 +838,24 @@ a</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="c
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope#iri2file" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="iri2file(localScopeFiles:scala.collection.immutable.Map[(ammonite.ops.Path,String),scala.collection.immutable.Seq[ammonite.ops.Path]]):scala.collection.immutable.Seq[(String,ammonite.ops.Path)]"></a><a id="iri2file(Map[(Path,String),Seq[Path]]):Seq[(String,Path)]"></a>
+      <span class="permalink">
+      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#iri2file(localScopeFiles:scala.collection.immutable.Map[(ammonite.ops.Path,String),scala.collection.immutable.Seq[ammonite.ops.Path]]):scala.collection.immutable.Seq[(String,ammonite.ops.Path)]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">iri2file</span><span class="params">(<span name="localScopeFiles">localScopeFiles: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Map.html#scala.collection.immutable.Map" class="extype" name="scala.collection.immutable.Map">Map</a>[(<a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>, <span class="extype" name="scala.Predef.String">String</span>), <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Seq.html#scala.collection.immutable.Seq" class="extype" name="scala.collection.immutable.Seq">Seq</a>[<a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>]]</span>)</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Seq.html#scala.collection.immutable.Seq" class="extype" name="scala.collection.immutable.Seq">Seq</a>[(<span class="extype" name="scala.Predef.String">String</span>, <a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>)]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Converts <span class="extype" name="localFileScope()">localFileScope()</span> to pairs of IRI and corresponding local file.</p><div class="fullcomment"><div class="comment cmt"><p>Converts <span class="extype" name="localFileScope()">localFileScope()</span> to pairs of IRI and corresponding local file.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>Uses the &quot;uriStartString&quot; from the <span class="extype" name="localFileScope()">localFileScope()</span> results to reconstruct IRIs corresponding
+        to catalog-resolved local files.</p></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <span class="permalink">
@@ -882,9 +900,9 @@ a</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="c
               
         </dd></dl></div>
     </li><li name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope#localFileScope" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="scope">
-      <a id="localFileScope(predicate:gov.nasa.jpl.imce.xml.catalog.scope.CatalogEntryFilePredicate):scala.collection.immutable.Map[String,scala.collection.immutable.Seq[ammonite.ops.Path]]"></a><a id="localFileScope(CatalogEntryFilePredicate):Map[String,Seq[Path]]"></a>
+      <a id="localFileScope(predicate:gov.nasa.jpl.imce.xml.catalog.scope.CatalogEntryFilePredicate):scala.collection.immutable.Map[(ammonite.ops.Path,String),scala.collection.immutable.Seq[ammonite.ops.Path]]"></a><a id="localFileScope(CatalogEntryFilePredicate):Map[(Path,String),Seq[Path]]"></a>
       <span class="permalink">
-      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#localFileScope(predicate:gov.nasa.jpl.imce.xml.catalog.scope.CatalogEntryFilePredicate):scala.collection.immutable.Map[String,scala.collection.immutable.Seq[ammonite.ops.Path]]" title="Permalink">
+      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#localFileScope(predicate:gov.nasa.jpl.imce.xml.catalog.scope.CatalogEntryFilePredicate):scala.collection.immutable.Map[(ammonite.ops.Path,String),scala.collection.immutable.Seq[ammonite.ops.Path]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -893,11 +911,13 @@ a</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="c
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">localFileScope</span><span class="params">(<span name="predicate">predicate: <a href="CatalogEntryFilePredicate.html" class="extype" name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogEntryFilePredicate">CatalogEntryFilePredicate</a></span>)</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Map.html#scala.collection.immutable.Map" class="extype" name="scala.collection.immutable.Map">Map</a>[<span class="extype" name="scala.Predef.String">String</span>, <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Seq.html#scala.collection.immutable.Seq" class="extype" name="scala.collection.immutable.Seq">Seq</a>[<a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>]]</span>
+        <span class="name">localFileScope</span><span class="params">(<span name="predicate">predicate: <a href="CatalogEntryFilePredicate.html" class="extype" name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogEntryFilePredicate">CatalogEntryFilePredicate</a></span>)</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Map.html#scala.collection.immutable.Map" class="extype" name="scala.collection.immutable.Map">Map</a>[(<a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>, <span class="extype" name="scala.Predef.String">String</span>), <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Seq.html#scala.collection.immutable.Seq" class="extype" name="scala.collection.immutable.Seq">Seq</a>[<a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>]]</span>
       </span>
       
-      <p class="shortcomment cmt">Files local file paths that in scope of being resolved by the <a href="https://oss.sonatype.org/service/local/repositories/public/archive/xml-resolver/xml-resolver/1.2/xml-resolver-1.2-javadoc.jar/!/org/apache/xml/resolver/CatalogEntry.html" class="extype" name="org.apache.xml.resolver.CatalogEntry">org.apache.xml.resolver.CatalogEntry</a> rules.</p><div class="fullcomment"><div class="comment cmt"><p>Files local file paths that in scope of being resolved by the <a href="https://oss.sonatype.org/service/local/repositories/public/archive/xml-resolver/xml-resolver/1.2/xml-resolver-1.2-javadoc.jar/!/org/apache/xml/resolver/CatalogEntry.html" class="extype" name="org.apache.xml.resolver.CatalogEntry">org.apache.xml.resolver.CatalogEntry</a> rules.
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A map of the local file paths found for each <a href="https://oss.sonatype.org/service/local/repositories/public/archive/xml-resolver/xml-resolver/1.2/xml-resolver-1.2-javadoc.jar/!/org/apache/xml/resolver/CatalogEntry.html" class="extype" name="org.apache.xml.resolver.CatalogEntry">org.apache.xml.resolver.CatalogEntry</a> rule</p></dd></dl></div>
+      <p class="shortcomment cmt">Local file paths resolvable given the <a href="https://oss.sonatype.org/service/local/repositories/public/archive/xml-resolver/xml-resolver/1.2/xml-resolver-1.2-javadoc.jar/!/org/apache/xml/resolver/CatalogEntry.html" class="extype" name="org.apache.xml.resolver.CatalogEntry">org.apache.xml.resolver.CatalogEntry</a> rules according to a predicate.</p><div class="fullcomment"><div class="comment cmt"><p>Local file paths resolvable given the <a href="https://oss.sonatype.org/service/local/repositories/public/archive/xml-resolver/xml-resolver/1.2/xml-resolver-1.2-javadoc.jar/!/org/apache/xml/resolver/CatalogEntry.html" class="extype" name="org.apache.xml.resolver.CatalogEntry">org.apache.xml.resolver.CatalogEntry</a> rules according to a predicate.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>For each <a href="https://oss.sonatype.org/service/local/repositories/public/archive/xml-resolver/xml-resolver/1.2/xml-resolver-1.2-javadoc.jar/!/org/apache/xml/resolver/CatalogEntry.html" class="extype" name="org.apache.xml.resolver.CatalogEntry">org.apache.xml.resolver.CatalogEntry</a> rule, maps the tuple
+        of the local file path corresponding to the &quot;rewritePrefix&quot; and the associated &quot;uriStartString&quot;
+        to the set of local files found from the &quot;rewritePrefix&quot; according to the predicate.</p></dd></dl></div>
     </li><li name="org.apache.xml.resolver.Catalog#makeAbsolute" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="makeAbsolute(x$1:String):String"></a><a id="makeAbsolute(String):String"></a>
       <span class="permalink">
