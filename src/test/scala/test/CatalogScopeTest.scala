@@ -77,7 +77,7 @@ class CatalogScopeTest extends FlatSpec {
           Set(expanded)
         }
 
-        override val fileExtension: String = ".oml"
+        override val fileExtensions: Set[String] = Set(".oml")
       })
     assert(scope.size == 0)
 
@@ -106,7 +106,7 @@ class CatalogScopeTest extends FlatSpec {
           Set(expanded)
         }
 
-        override val fileExtension: String = ".oml"
+        override val fileExtensions: Set[String] = Set(".oml")
       }
 
       val scope: Map[(Path, String), Seq[Path]] = cat.localFileScope(predicate)
@@ -131,8 +131,9 @@ class CatalogScopeTest extends FlatSpec {
           val inc: Seq[(String, Path)] = fs.foldLeft(Seq.empty[(String, Path)]) {
             case (acc2, f) =>
               val suffix = f.relativeTo(pathPrefix)
-              val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffix.toString().stripSuffix(predicate.fileExtension)
 
+              val suffixWithoutExtensions = predicate.fileExtensions.foldLeft(suffix.toString)(_.stripSuffix(_))
+              val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffixWithoutExtensions
               (uri -> f) +: acc2
           }
           acc1 ++ inc
@@ -147,7 +148,9 @@ class CatalogScopeTest extends FlatSpec {
         System.out.println(s"cs = $iri\nfile=$file\n")
       }
 
-      val converted = csFiles.map { case (uri, path) => uri.stripSuffix(predicate.fileExtension) -> path }.toMap
+      val converted = csFiles.map { case (uri, path) =>
+        predicate.fileExtensions.foldLeft(uri)(_.stripSuffix(_)) -> path
+      }.toMap
       assert(converted == iri2file.toMap)
 
       val files: Set[Path] = scope.values.flatMap(_.to[Set]).to[Set]
@@ -198,7 +201,7 @@ class CatalogScopeTest extends FlatSpec {
             Set(expanded)
           }
 
-          override val fileExtension: String = ".oml"
+          override val fileExtensions: Set[String] = Set(".oml")
         })
 
       // verify that there are exactly 7 rewrite rules but only 5 sets of files.
@@ -211,6 +214,107 @@ class CatalogScopeTest extends FlatSpec {
         files.foreach { f =>
           assert(f.toIO.exists)
           assert(f.isFile)
+        }
+      }
+  }
+
+  "vocabularies3/oml.catalog.xml scope" should "be ok" in withScopedCatalog {
+    (_, cat) =>
+      cat.parseCatalog(
+        classOf[CatalogScopeTest].getResource("/vocabularies3/oml.catalog.xml"))
+
+      val predicate = new CatalogEntryFilePredicate {
+        override def apply(uriStartString: String, path: Path): Boolean = {
+          assert(uriStartString.startsWith("http://"))
+          path.toIO.exists && path.isFile && (path.last.endsWith(".oml") || path.last.endsWith(".omlzip"))
+        }
+
+        override def expandLocalFilePath(pathPrefix: Path): Set[Path] = {
+          val expanded1: Path = pathPrefix / up / (pathPrefix.last + ".oml")
+          val expanded2: Path = pathPrefix / up / (pathPrefix.last + ".omlzip")
+          Set(expanded1,expanded2)
+        }
+
+        override val fileExtensions: Set[String] = Set(".oml", ".omlzip")
+      }
+
+      val scope: Map[(Path, String), Seq[Path]] = cat.localFileScope(predicate)
+
+      // verify that there are exactly 6 rewrite rules and correspondingly 6 sets of files.
+      assert(cat.entries().count(_.getEntryType == Catalog.REWRITE_URI) == 6)
+      assert(scope.size == 6)
+
+      // verify that the scope for each rewrite uri rule is exactly 1 file
+      scope.values.foreach { files =>
+        assert(1 == files.size)
+        files.foreach { f =>
+          assert(f.toIO.exists)
+          assert(f.isFile)
+        }
+      }
+
+      val csFiles: Seq[(String, Path)] = cat.iri2file(scope, predicate)
+
+      val iri2file: Seq[(String, Path)] = scope.foldLeft(Seq.empty[(String, Path)]) {
+        case (acc1, ((pathPrefix, uriStartPrefix), fs)) =>
+          val inc: Seq[(String, Path)] = fs.foldLeft(Seq.empty[(String, Path)]) {
+            case (acc2, f) =>
+              val suffix = f.relativeTo(pathPrefix)
+
+              val suffixWithoutExtensions = predicate.fileExtensions.foldLeft(suffix.toString)(_.stripSuffix(_))
+              val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffixWithoutExtensions
+              (uri -> f) +: acc2
+          }
+          acc1 ++ inc
+      }
+
+      iri2file.sortBy(_._1).foreach { case (iri, file) =>
+        System.out.println(s"iri = $iri\nfile=$file\n")
+      }
+      System.out.println()
+
+      csFiles.sortBy(_._1).foreach { case (iri, file) =>
+        System.out.println(s"cs = $iri\nfile=$file\n")
+      }
+
+      val converted = csFiles.map { case (uri, path) =>
+        predicate.fileExtensions.foldLeft(uri)(_.stripSuffix(_)) -> path
+      }.toMap
+      assert(converted == iri2file.toMap)
+
+      val files: Set[Path] = scope.values.flatMap(_.to[Set]).to[Set]
+      Set[String](
+        "http://www.w3.org/2002/07/owl",
+        "http://purl.org/dc/elements/1.1/",
+        "http://imce.jpl.nasa.gov/foundation/annotation/annotation",
+        "http://imce.jpl.nasa.gov/foundation/base/base",
+        "http://imce.jpl.nasa.gov/foundation/base/base-embedding",
+        "http://imce.jpl.nasa.gov/foundation/fact/fact"
+      ).foreach { uri =>
+        val resolved1 = cat.resolveURIWithExtension(uri, ".oml").flatMap { f =>
+          if (f.toIO.exists()) Some(f) else None
+        }
+        val resolved2 = cat.resolveURIWithExtension(uri, ".omlzip").flatMap { f =>
+          if (f.toIO.exists()) Some(f) else None
+        }
+        assert((resolved1.isDefined && resolved2.isEmpty) || (resolved1.isEmpty && resolved2.isDefined))
+        resolved1.map(r => assert(files.contains(r)))
+        resolved2.map(r => assert(files.contains(r)))
+      }
+
+      Set[String](
+        "http://does/not/exist",
+        "http://www.w3.org/2002/owl",
+        "http://imce.jpl.nasa.gov/foundation/annotation/shouldNotBeIncluded",
+        "http://imce.jpl.nasa.gov/foundation/base/shouldNotBeIncluded.oml",
+        "http://imce.jpl.nasa.gov/foundation/base/base.oml"
+      ).foreach { uri =>
+        cat.resolveURIWithExtension(uri, ".oml") match {
+          case None =>
+            ()
+          case Some(resolved) =>
+            assert(!resolved.toIO.exists,
+              s"$uri should not have resolved to: $resolved")
         }
       }
   }

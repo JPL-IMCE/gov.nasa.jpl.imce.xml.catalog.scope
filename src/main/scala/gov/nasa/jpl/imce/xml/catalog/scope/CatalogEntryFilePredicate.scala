@@ -39,7 +39,8 @@ trait CatalogEntryFilePredicate {
   def apply(uriStartString: String, path: Path): Boolean
 
   /**
-    * Expands a path prefix to yield potentially zero or more candidate local files.
+    * Expands a path prefix to yield potentially zero or more candidate local files
+    * that may or may not exist.
     *
     * @param pathPrefix
     * @return
@@ -48,7 +49,7 @@ trait CatalogEntryFilePredicate {
   def expandLocalFilePath(pathPrefix: Path): Set[Path]
 
   /**
-    * File extension including '.'
+    * File extensions including '.'
     */
-  val fileExtension: String
+  val fileExtensions: Set[String]
 }

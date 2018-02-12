@@ -195,7 +195,9 @@ class CatalogScope() extends Catalog {
           .filter(f => predicate(uriStartString, f))
           .to[Set]
       else
-        predicate.expandLocalFilePath(pathPrefix)
+        predicate
+          .expandLocalFilePath(pathPrefix)
+          .filter(f => f.toIO.exists() && f.isFile)
 
       acc + ((pathPrefix -> uriStartString) -> localFiles.to[Seq].sortBy(_.toString))
 
@@ -218,7 +220,8 @@ class CatalogScope() extends Catalog {
       val inc: Seq[(String, Path)] = fs.foldLeft(Seq.empty[(String, Path)]) {
         case (acc2, f) =>
           val suffix = f.relativeTo(pathPrefix)
-          val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffix.toString().stripSuffix(predicate.fileExtension)
+          val suffixWithoutExtensions = predicate.fileExtensions.foldLeft(suffix.toString)(_.stripSuffix(_))
+          val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffixWithoutExtensions
           (uri -> f) +: acc2
       }
       acc1 ++ inc
