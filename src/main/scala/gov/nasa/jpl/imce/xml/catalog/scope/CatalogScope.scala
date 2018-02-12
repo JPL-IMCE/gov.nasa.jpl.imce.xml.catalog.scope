@@ -112,7 +112,7 @@ class CatalogScope() extends Catalog {
     * @group scope
     */
   def resolveURIWithExtension(uri: String, extension: String): Option[Path] = {
-    val uriWithExtension = uri.stripSuffix("/")+extension
+    val uriWithExtension = uri+extension
     Option.apply(resolveURI(uriWithExtension)) match {
       case Some(resolved) =>
         if (resolved.startsWith("file:"))
@@ -207,17 +207,18 @@ class CatalogScope() extends Catalog {
     * Converts [[localFileScope()]] to pairs of IRI and corresponding local file.
     *
     * @param localScopeFiles
+    * @param predicate
     * @return Uses the "uriStartString" from the [[localFileScope()]] results to reconstruct IRIs corresponding
     *         to catalog-resolved local files.
     */
-  def iri2file(localScopeFiles: Map[(Path, String), Seq[Path]])
+  def iri2file(localScopeFiles: Map[(Path, String), Seq[Path]], predicate: CatalogEntryFilePredicate)
   : Seq[(String, Path)]
   = localScopeFiles.foldLeft(Seq.empty[(String, Path)]) {
     case (acc1, ((pathPrefix, uriStartPrefix), fs)) =>
       val inc: Seq[(String, Path)] = fs.foldLeft(Seq.empty[(String, Path)]) {
         case (acc2, f) =>
           val suffix = f.relativeTo(pathPrefix)
-          val uri = uriStartPrefix + suffix.toString()
+          val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffix.toString().stripSuffix(predicate.fileExtension)
           (uri -> f) +: acc2
       }
       acc1 ++ inc

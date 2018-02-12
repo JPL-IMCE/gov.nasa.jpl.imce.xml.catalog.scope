@@ -77,6 +77,7 @@ class CatalogScopeTest extends FlatSpec {
           Set(expanded)
         }
 
+        override val fileExtension: String = ".oml"
       })
     assert(scope.size == 0)
 
@@ -94,18 +95,21 @@ class CatalogScopeTest extends FlatSpec {
       cat.parseCatalog(
         classOf[CatalogScopeTest].getResource("/vocabularies1/oml.catalog.xml"))
 
-      val scope: Map[(Path, String), Seq[Path]] =
-        cat.localFileScope(new CatalogEntryFilePredicate {
-          override def apply(uriStartString: String, path: Path): Boolean = {
-            assert(uriStartString.startsWith("http://"))
-            path.toIO.exists && path.isFile && path.last.endsWith(".oml")
-          }
+      val predicate = new CatalogEntryFilePredicate {
+        override def apply(uriStartString: String, path: Path): Boolean = {
+          assert(uriStartString.startsWith("http://"))
+          path.toIO.exists && path.isFile && path.last.endsWith(".oml")
+        }
 
-          override def expandLocalFilePath(pathPrefix: Path): Set[Path] = {
-            val expanded: Path = pathPrefix / up / (pathPrefix.last + ".oml")
-            Set(expanded)
-          }
-        })
+        override def expandLocalFilePath(pathPrefix: Path): Set[Path] = {
+          val expanded: Path = pathPrefix / up / (pathPrefix.last + ".oml")
+          Set(expanded)
+        }
+
+        override val fileExtension: String = ".oml"
+      }
+
+      val scope: Map[(Path, String), Seq[Path]] = cat.localFileScope(predicate)
 
       // verify that there are exactly 6 rewrite rules and correspondingly 6 sets of files.
       assert(cat.entries().count(_.getEntryType == Catalog.REWRITE_URI) == 6)
@@ -120,14 +124,14 @@ class CatalogScopeTest extends FlatSpec {
         }
       }
 
-      val csFiles: Seq[(String, Path)] = cat.iri2file(scope)
+      val csFiles: Seq[(String, Path)] = cat.iri2file(scope, predicate)
 
       val iri2file: Seq[(String, Path)] = scope.foldLeft(Seq.empty[(String, Path)]) {
         case (acc1, ((pathPrefix, uriStartPrefix), fs)) =>
           val inc: Seq[(String, Path)] = fs.foldLeft(Seq.empty[(String, Path)]) {
             case (acc2, f) =>
               val suffix = f.relativeTo(pathPrefix)
-              val uri = uriStartPrefix + suffix.toString()
+              val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffix.toString().stripSuffix(predicate.fileExtension)
 
               (uri -> f) +: acc2
           }
@@ -140,10 +144,11 @@ class CatalogScopeTest extends FlatSpec {
       System.out.println()
 
       csFiles.sortBy(_._1).foreach { case (iri, file) =>
-        System.out.println(s"iri = $iri\nfile=$file\n")
+        System.out.println(s"cs = $iri\nfile=$file\n")
       }
 
-      assert(csFiles.toMap == iri2file.toMap)
+      val converted = csFiles.map { case (uri, path) => uri.stripSuffix(predicate.fileExtension) -> path }.toMap
+      assert(converted == iri2file.toMap)
 
       val files: Set[Path] = scope.values.flatMap(_.to[Set]).to[Set]
       Set[String](
@@ -192,6 +197,8 @@ class CatalogScopeTest extends FlatSpec {
             val expanded: Path = pathPrefix / up / (pathPrefix.last + ".oml")
             Set(expanded)
           }
+
+          override val fileExtension: String = ".oml"
         })
 
       // verify that there are exactly 7 rewrite rules but only 5 sets of files.

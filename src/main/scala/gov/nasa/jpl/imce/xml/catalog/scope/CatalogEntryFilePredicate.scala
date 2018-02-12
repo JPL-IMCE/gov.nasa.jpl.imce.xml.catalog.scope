@@ -47,4 +47,8 @@ trait CatalogEntryFilePredicate {
     */
   def expandLocalFilePath(pathPrefix: Path): Set[Path]
 
+  /**
+    * File extension including '.'
+    */
+  val fileExtension: String
 }
