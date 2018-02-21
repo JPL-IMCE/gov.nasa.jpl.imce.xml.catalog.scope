@@ -138,12 +138,11 @@ class CatalogScope() extends Catalog {
     * Local file paths resolvable given the [[org.apache.xml.resolver.CatalogEntry]] rules according to a predicate.
     *
     * @param predicate
-    * @return For each [[org.apache.xml.resolver.CatalogEntry]] rule, maps the tuple
-    *         of the local file path corresponding to the "rewritePrefix" and the associated "uriStartString"
-    *         to the set of local files found from the "rewritePrefix" according to the predicate.
+    * @return A map of local files to the longest "uriStartString" with which it was resolved
+    *         from the corresponding "rewritePrefix" based on the predicate.
     * @group scope
     */
-  def localFileScope(predicate: CatalogEntryFilePredicate): Map[(Path, String), Seq[Path]]
+  def localFileScope(predicate: CatalogEntryFilePredicate): Map[Path, (Path, String)]
   = {
     implicit val catalogRewritePriority: Ordering[Path]
     = new Ordering[Path] {
@@ -187,7 +186,7 @@ class CatalogScope() extends Catalog {
         acc
     }
 
-    rewritePaths.foldLeft(Map.empty[(Path, String), Seq[Path]]) { case (acc, (pathPrefix, uriStartString)) =>
+    rewritePaths.foldLeft(Map.empty[Path, (Path, String)]) { case (acc, (pathPrefix, uriStartString)) =>
       val localFiles: Set[Path]
       = if (pathPrefix.toIO.exists && pathPrefix.isDir)
         ls
@@ -199,31 +198,37 @@ class CatalogScope() extends Catalog {
           .expandLocalFilePath(pathPrefix)
           .filter(f => f.toIO.exists() && f.isFile)
 
-      acc + ((pathPrefix -> uriStartString) -> localFiles.to[Seq].sortBy(_.toString))
+      localFiles.foldLeft(acc) { case (prev, localFile) =>
+        prev.get(localFile) match {
+          case None =>
+            prev + (localFile -> (pathPrefix, uriStartString))
+          case Some((pPrefix, uriPrefix)) =>
+            if (uriPrefix.length > uriStartString.length)
+              prev
+            else
+              prev.updated(localFile, (pathPrefix, uriStartString))
+        }
+      }
 
     }
   }
 
 
   /**
-    * Converts [[localFileScope()]] to pairs of IRI and corresponding local file.
+    * Converts [[localFileScope()]] to map of IRI and corresponding local file.
     *
     * @param localScopeFiles
     * @param predicate
     * @return Uses the "uriStartString" from the [[localFileScope()]] results to reconstruct IRIs corresponding
     *         to catalog-resolved local files.
     */
-  def iri2file(localScopeFiles: Map[(Path, String), Seq[Path]], predicate: CatalogEntryFilePredicate)
-  : Seq[(String, Path)]
-  = localScopeFiles.foldLeft(Seq.empty[(String, Path)]) {
-    case (acc1, ((pathPrefix, uriStartPrefix), fs)) =>
-      val inc: Seq[(String, Path)] = fs.foldLeft(Seq.empty[(String, Path)]) {
-        case (acc2, f) =>
-          val suffix = f.relativeTo(pathPrefix)
-          val suffixWithoutExtensions = predicate.fileExtensions.foldLeft(suffix.toString)(_.stripSuffix(_))
-          val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffixWithoutExtensions
-          (uri -> f) +: acc2
-      }
-      acc1 ++ inc
+  def iri2file(localScopeFiles: Map[Path, (Path, String)], predicate: CatalogEntryFilePredicate)
+  : Map[String, Path]
+  = localScopeFiles.foldLeft(Map.empty[String, Path]) {
+    case (acc1, (f, (pathPrefix, uriStartPrefix))) =>
+      val suffix = f.relativeTo(pathPrefix)
+      val suffixWithoutExtensions = predicate.fileExtensions.foldLeft(suffix.toString)(_.stripSuffix(_))
+      val uri = uriStartPrefix + (if (uriStartPrefix.endsWith("/")) "" else "/") + suffixWithoutExtensions
+      acc1 + (uri -> f)
   }
 }
