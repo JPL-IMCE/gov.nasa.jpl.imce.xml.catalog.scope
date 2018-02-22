@@ -786,9 +786,9 @@ a</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="c
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Catalog</dd></dl></div>
     </li><li name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope#getParsedCatalogs" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="scope">
-      <a id="getParsedCatalogs():scala.collection.immutable.Set[java.net.URL]"></a><a id="getParsedCatalogs():Set[URL]"></a>
+      <a id="getParsedCatalogs():scala.collection.immutable.Set[ammonite.ops.Path]"></a><a id="getParsedCatalogs():Set[Path]"></a>
       <span class="permalink">
-      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#getParsedCatalogs():scala.collection.immutable.Set[java.net.URL]" title="Permalink">
+      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#getParsedCatalogs():scala.collection.immutable.Set[ammonite.ops.Path]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -797,14 +797,14 @@ a</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="c
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getParsedCatalogs</span><span class="params">()</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Set.html#scala.collection.immutable.Set" class="extype" name="scala.collection.immutable.Set">Set</a>[<a href="https://docs.oracle.com/javase/8/docs/api/java/net/URL.html#java.net.URL" class="extype" name="java.net.URL">URL</a>]</span>
+        <span class="name">getParsedCatalogs</span><span class="params">()</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/immutable/Set.html#scala.collection.immutable.Set" class="extype" name="scala.collection.immutable.Set">Set</a>[<a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>]</span>
       </span>
       
       <p class="shortcomment cmt">Get the successfully parsed catalogs.</p>
     </li><li name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope#hasParsedCatalog" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="scope">
-      <a id="hasParsedCatalog(url:java.net.URL):Boolean"></a><a id="hasParsedCatalog(URL):Boolean"></a>
+      <a id="hasParsedCatalog(catFile:ammonite.ops.Path):Boolean"></a><a id="hasParsedCatalog(Path):Boolean"></a>
       <span class="permalink">
-      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#hasParsedCatalog(url:java.net.URL):Boolean" title="Permalink">
+      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#hasParsedCatalog(catFile:ammonite.ops.Path):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -813,12 +813,12 @@ a</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="c
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">hasParsedCatalog</span><span class="params">(<span name="url">url: <a href="https://docs.oracle.com/javase/8/docs/api/java/net/URL.html#java.net.URL" class="extype" name="java.net.URL">URL</a></span>)</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/Boolean.html#scala.Boolean" class="extype" name="scala.Boolean">Boolean</a></span>
+        <span class="name">hasParsedCatalog</span><span class="params">(<span name="catFile">catFile: <a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a></span>)</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/Boolean.html#scala.Boolean" class="extype" name="scala.Boolean">Boolean</a></span>
       </span>
       
       <p class="shortcomment cmt">Has this catalog been successfully parsed?
 </p><div class="fullcomment"><div class="comment cmt"><p>Has this catalog been successfully parsed?
-</p></div><dl class="paramcmts block"><dt class="param">url</dt><dd class="cmt"><p>catalog</p></dd><dt>returns</dt><dd class="cmt"><p>whether this catalog url has been successfully parsed already</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">catFile</dt><dd class="cmt"><p>catalog</p></dd><dt>returns</dt><dd class="cmt"><p>whether this catalog url has been successfully parsed already</p></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <span class="permalink">
@@ -1169,9 +1169,9 @@ without an exception thrown.</p><div class="fullcomment"><div class="comment cmt
 without an exception thrown. One way to detect this condition is to check
 whether parsePendingCatalogs() has been called during the execution of parseCatalog(URL).</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope">CatalogScope</a> → Catalog</dd></dl></div>
     </li><li name="gov.nasa.jpl.imce.xml.catalog.scope.CatalogScope#parsedCatalogs" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="parsedCatalogs:scala.collection.mutable.HashSet[java.net.URL]"></a><a id="parsedCatalogs:HashSet[URL]"></a>
+      <a id="parsedCatalogs:scala.collection.mutable.HashSet[ammonite.ops.Path]"></a><a id="parsedCatalogs:HashSet[Path]"></a>
       <span class="permalink">
-      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#parsedCatalogs:scala.collection.mutable.HashSet[java.net.URL]" title="Permalink">
+      <a href="../../../../../../../gov/nasa/jpl/imce/xml/catalog/scope/CatalogScope.html#parsedCatalogs:scala.collection.mutable.HashSet[ammonite.ops.Path]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -1180,7 +1180,7 @@ whether parsePendingCatalogs() has been called during the execution of parseCata
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">parsedCatalogs</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/mutable/HashSet.html#scala.collection.mutable.HashSet" class="extype" name="scala.collection.mutable.HashSet">HashSet</a>[<a href="https://docs.oracle.com/javase/8/docs/api/java/net/URL.html#java.net.URL" class="extype" name="java.net.URL">URL</a>]</span>
+        <span class="name">parsedCatalogs</span><span class="result">: <a href="http://scala-lang.org/files/archive/api/2.12.4/scala/collection/mutable/HashSet.html#scala.collection.mutable.HashSet" class="extype" name="scala.collection.mutable.HashSet">HashSet</a>[<a href="https://oss.sonatype.org/service/local/repositories/public/archive/com/lihaoyi/ammonite-ops_2.12/1.0.3/ammonite-ops_2.12-1.0.3-javadoc.jar/!/ammonite/ops/Path.html#ammonite.ops.Path" class="extype" name="ammonite.ops.Path">Path</a>]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
