@@ -43,25 +43,25 @@ import scala.util.control.Exception.nonFatalCatch
   */
 class CatalogScope() extends Catalog {
 
-  protected val parsedCatalogs = new scala.collection.mutable.HashSet[URL]()
+  protected val parsedCatalogs = new scala.collection.mutable.HashSet[Path]()
 
   private var isParsing: Boolean = false
-  private var parsingCatalog: Option[URL] = None
+  private var parsingCatalog: Option[Path] = None
 
   /**
     * Has this catalog been successfully parsed?
     *
-    * @param url catalog
+    * @param catFile catalog
     * @return whether this catalog url has been successfully parsed already
     * @group scope
     */
-  def hasParsedCatalog(url: URL): Boolean = parsedCatalogs.contains(url)
+  def hasParsedCatalog(catFile: Path): Boolean = parsedCatalogs.contains(catFile)
 
   /**
     * Get the successfully parsed catalogs.
     * @group scope
     */
-  def getParsedCatalogs(): Set[URL] = parsedCatalogs.to[Set]
+  def getParsedCatalogs(): Set[Path] = parsedCatalogs.to[Set]
 
   /**
     * Keeps track of successfully parsed catalog files.
@@ -73,11 +73,11 @@ class CatalogScope() extends Catalog {
   override def parseCatalog(url: URL): Unit
   = synchronized[Unit] {
     require("file" == url.getProtocol)
-    val file = new File(url.toURI)
-    require(file.isAbsolute)
-    if (!hasParsedCatalog(url)) {
+    val file = Path(url.toURI.getPath)
+    require(file.toIO.isAbsolute)
+    if (!hasParsedCatalog(file)) {
       isParsing = true
-      parsingCatalog = Some(url)
+      parsingCatalog = Some(file)
       super.parseCatalog(url)
       if (parsingCatalog.nonEmpty) {
         isParsing = false
@@ -166,7 +166,7 @@ class CatalogScope() extends Catalog {
           .withApply { _ => None }
           .apply {
             val uriStartString = entry.getEntryArg(0)
-            val rewritePrefix = new File(entry.getEntryArg(1).stripPrefix("file:"))
+            val rewritePrefix = new File(new URL(entry.getEntryArg(1)).toURI.getPath)
             if (rewritePrefix.exists || rewritePrefix.getParentFile.exists) {
               val pathPrefix = Path(rewritePrefix)
               Some(pathPrefix -> uriStartString)

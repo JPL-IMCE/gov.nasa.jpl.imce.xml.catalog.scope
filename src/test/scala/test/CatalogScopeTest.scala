@@ -289,10 +289,9 @@ class CatalogScopeTest extends FlatSpec {
       }
   }
 
-  "vocabularies4/oml.catalog.xml scope" should "be ok" in withScopedCatalog {
+  "vocabularies 4/oml.catalog.xml scope" should "be ok" in withScopedCatalog {
     (_, cat) =>
-      cat.parseCatalog(
-        classOf[CatalogScopeTest].getResource("/vocabularies4/oml.catalog.xml"))
+      cat.parseCatalog(classOf[CatalogScopeTest].getResource("/vocabularies 4/oml.catalog.xml"))
 
       val scope: Map[Path, (Path, String)] =
         cat.localFileScope(new CatalogEntryFilePredicate {
@@ -313,8 +312,7 @@ class CatalogScopeTest extends FlatSpec {
       assert(6 == cat.entries().count(_.getEntryType == Catalog.REWRITE_URI))
       assert(5 == scope.size)
 
-      scope.foreach { case (_, (pathPrefix, uriPrefix)) =>
-        assert(pathPrefix.toString().length > "file:./".length)
+      scope.foreach { case (_, (_, uriPrefix)) =>
         assert(uriPrefix.length > "http://".length)
       }
 
